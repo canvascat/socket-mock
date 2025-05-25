@@ -27,15 +27,16 @@ const router = createBrowserRouter([{
   ],
 }])
 
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <RouterProvider router={router} />
-  </StrictMode>,
-)
+
 
 async function setup() {
   const socketStore = useSocketStore.getState()
   await Promise.all([socketStore.updateServerItems(), socketStore.updateClientItems()])
+  createRoot(document.getElementById('root')!).render(
+    <StrictMode>
+      <RouterProvider router={router} />
+    </StrictMode>,
+  )
   postMessage({ payload: 'removeLoading' }, '*')
 }
 

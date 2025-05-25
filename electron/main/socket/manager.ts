@@ -112,6 +112,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
   }
 
   createClient(name: MockKey<'client'>) {
+    this.logger.debug('createClient', name)
     const client = createMockClient(name)
     this.clientMap.set(name, client)
     this.store.addClient(name)
@@ -127,6 +128,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       type: `client:${eventName}`,
       args: args as any,
     })))).subscribe((data) => {
+      this.store.addLog(name, data.type, data.args)
       this.emit(data.type, data as any)
       this.emit('message', data)
     })
@@ -153,7 +155,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
   }
 
   getClientItems(socketType?: SocketType): SocketItem[] {
-    const runningKeys = new Set(this.store.clientMap.keys())
+    const runningKeys = new Set(this.clientMap.keys())
     const items = Array.from(this.store.clientMap, ([key, item]) => ({
       ...item,
       ...normalizeMockKey(key),

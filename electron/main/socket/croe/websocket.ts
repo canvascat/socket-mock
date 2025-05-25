@@ -70,6 +70,7 @@ class WebSocketMockClient extends MockClient {
     }).once('close', () => {
       this.emit('disconnect')
     }).once('error', (err) => {
+      this.close()
       this.emit('error', err)
     })
   }
