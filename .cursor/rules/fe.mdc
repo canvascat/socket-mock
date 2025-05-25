@@ -1,0 +1,42 @@
+---
+description: 
+globs: src/**/*.tsx
+alwaysApply: false
+---
+# Cursor Rule for This Project
+
+## 技术栈约定
+
+- 前端框架：**React 19+**
+- 状态管理：**Zustand**
+- UI 组件：**Radix UI** + **shadcn/ui 风格**（如果没有可以询问是否安装）
+- 样式：**Tailwind CSS**
+- 构建工具：**Vite**
+- 语言：**TypeScript**
+- 适配 Electron 桌面端
+
+## 代码风格
+
+- 组件优先使用函数式组件（Function Component），使用 hooks。
+- 状态管理优先使用 zustand，避免使用 useContext/useReducer 管理全局状态。
+- UI 组件优先选用 Radix UI 及其 shadcn/ui 封装版本，保持风格统一。
+- 样式优先使用 Tailwind CSS，避免自定义 CSS，除非必要。
+- 组件 props 类型使用 TypeScript interface/type 明确声明。
+- 事件、回调、异步操作优先使用箭头函数。
+- 文件命名采用小写+中划线（如 `user-list.tsx`），组件命名采用大驼峰（如 `UserList`）。
+- 目录结构建议：`components/`、`hooks/`、`stores/`、`pages/`、`utils/`、`types/`。
+
+## 代码组织建议
+
+- 复用性强的 UI 组件放在 `components/`，业务相关的页面组件放在 `pages/`。
+- 状态管理相关的 store 放在 `stores/`，每个 store 单独一个文件。
+- 自定义 hooks 放在 `hooks/`。
+- 公共类型定义放在 `types/`。
+- 工具函数放在 `utils/`。
+
+## 其它约定
+
+- 所有新代码必须有类型声明，避免使用 `any`。
+- 组件/函数需要有必要的注释，复杂逻辑需说明。
+- 依赖变更需同步更新 `package.json` 并执行 `pnpm install`。
+- Electron 相关代码与前端代码分离，避免混用 Node API 到前端。
