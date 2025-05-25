@@ -21,6 +21,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
 import { ipc } from '@/lib/electron'
 import { useSocketStore } from '@/store'
+import { Link } from 'react-router'
 
 interface CreateServerFieldValues {
   type: 'socket' | 'websocket'
@@ -281,6 +282,9 @@ export function SocketServerList() {
                           >
                             删除
                           </Button>
+                          <Link to={`/server/${encodeURIComponent(item.key)}`}>
+                            <Button size="sm" variant="secondary">详情</Button>
+                          </Link>
                         </TableCell>
                       </TableRow>
                     )

@@ -10,7 +10,7 @@ function broadcast(message: any) {
   })
 }
 
-export type OnFnMap = Pick<SocketManager, 'createServer' | 'createClient' | 'closeServer' | 'closeClient' | 'send2server' | 'send2client'>
+export type OnFnMap = Pick<SocketManager, 'createServer' | 'createClient' | 'closeServer' | 'closeClient' | 'send2server' | 'send2client' | 'broadcast2client'>
 
 export type OnEventMap = {
   [K in keyof OnFnMap]: Parameters<OnFnMap[K]>;

@@ -6,7 +6,7 @@ import {
   Server,
   Workflow,
 } from 'lucide-react'
-import { SocketClientDetail, SocketClientList, SocketServerList } from '@/pages'
+import { SocketClientDetail, SocketClientList, SocketServerDetail, SocketServerList } from '@/pages'
 import Demo from './demo'
 
 export interface IRouteObject extends NonIndexRouteObject {
@@ -29,7 +29,7 @@ const routes: IRouteObject[] = [
       {
         title: 'Detail',
         path: '/server/:id',
-        element: <Demo title="Detail" description="Detail" />,
+        element: <SocketServerDetail />,
         hideInSidebar: true,
       },
     ],

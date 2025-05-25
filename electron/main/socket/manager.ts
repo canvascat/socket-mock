@@ -92,6 +92,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       'connect',
       'disconnect',
       'message',
+      'send',
     ]
     const sub = merge(...eventNames.map(eventName => fromEvent<ServerMessageType>(server, eventName, (...args) => ({
       name,
@@ -121,6 +122,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       'disconnect',
       'error',
       'message',
+      'send',
     ]
 
     const sub = merge(...eventNames.map(eventName => fromEvent<ClientMessageType>(client, eventName, (...args) => ({
