@@ -3,6 +3,8 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { normalizeMockKey } from '@main/socket/croe/util'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import { Link } from 'react-router'
+import { toast } from 'sonner'
 import { z } from 'zod'
 import { Button } from '@/components/ui/button'
 import {
@@ -19,9 +21,8 @@ import { Form, FormControl, FormField, FormItem, FormMessage } from '@/component
 import { Input } from '@/components/ui/input'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { ipc } from '@/lib/electron'
+import { ipc, precheckServer } from '@/lib/electron'
 import { useSocketStore } from '@/store'
-import { Link } from 'react-router'
 
 interface CreateServerFieldValues {
   type: 'socket' | 'websocket'
@@ -86,27 +87,17 @@ export function SocketServerList() {
       return
     setCreating(true)
     // 异步校验端口/管道是否被占用
-    let err: Error | void
-    if (values.type === 'socket') {
-      err = await ipc.invoke.checkServer({ path: values.name })
-      if (err) {
-        form.setError('name', { message: '管道已存在' })
-        setCreating(false)
-        return
-      }
-    }
-    else if (values.type === 'websocket') {
-      const port = Number(values.name)
-      err = await ipc.invoke.checkServer({ port })
-      if (err) {
-        console.debug(err)
-        form.setError('name', { message: '端口已存在' })
-        setCreating(false)
-        return
-      }
-    }
-    // 通过后再创建
+
     const key = (values.type === 'socket' ? `server:socket:${values.name}` : `server:websocket:${values.name}`) as MockKey<'server'>
+    const err = await precheckServer(key)
+    if (err) {
+      const message = err.includes('EADDRINUSE') ? '端口已被占用' : err
+      form.setError('name', { message })
+      setCreating(false)
+      return
+    }
+
+    // 通过后再创建
     try {
       console.debug(key)
       ipc.send.createServer(key)
@@ -131,7 +122,12 @@ export function SocketServerList() {
 
   const handleStart = async (key: MockKey<'server'>) => {
     // 启动服务逻辑
-    await ipc.send.createServer(key)
+    const err = await precheckServer(key)
+    if (err) {
+      toast.error(err)
+      return
+    }
+    ipc.send.createServer(key)
     await useSocketStore.getState().updateServerItems()
   }
 

@@ -1,11 +1,12 @@
 import type { MockKey } from '@main/socket/croe/type'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
+import { toast } from 'sonner'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
 import { Textarea } from '@/components/ui/textarea'
-import { ipc } from '@/lib/electron'
+import { ipc, precheckServer } from '@/lib/electron'
 import { useSocketStore } from '@/store'
 
 export function SocketServerDetail() {
@@ -27,7 +28,13 @@ export function SocketServerDetail() {
 
   // 操作
   const handleStart = async () => {
-    ipc.send.createServer(keyAsServerKey)
+    const err = await precheckServer(keyAsServerKey)
+    if (err) {
+      toast.error(err)
+    }
+    else {
+      ipc.send.createServer(keyAsServerKey)
+    }
   }
   const handleClose = async () => {
     ipc.send.closeServer(keyAsServerKey)
@@ -39,14 +46,15 @@ export function SocketServerDetail() {
   const handleBroadcast = async () => {
     setSending(true)
     try {
-      let content = msg
-
-      ipc.send.broadcast2client(keyAsServerKey, content)
+      ipc.send.broadcast2client(keyAsServerKey, msg)
       setMsg('')
-    } finally {
+    }
+    finally {
       setSending(false)
     }
   }
+
+  const logText = logs.join('\n')
 
   return (
     <div className="p-6 pt-0 flex flex-col h-0 gap-4 flex-1 overflow-hidden">
@@ -56,7 +64,7 @@ export function SocketServerDetail() {
           {key}
         </div>
         <div className="text-xs whitespace-pre-line break-all flex-1 overflow-auto">
-          {logs.length === 0 ? <div className="text-muted-foreground">暂无日志</div> : logs.map((l, i) => <pre key={`${i}:${l}`}>{l}</pre>)}
+          {!logText ? <div className="text-muted-foreground">暂无日志</div> : <pre>{logText}</pre>}
         </div>
       </Card>
       <Card className="p-4 gap-2 flex flex-col">

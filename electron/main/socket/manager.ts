@@ -1,11 +1,11 @@
 import type { ListenOptions } from 'node:net'
 import type { MockClient, MockServer } from './croe/common'
-import type { MockClientEventMap, MockKey, MockServerEventMap, SocketType } from './croe/type'
+import type { MockClientEventMap, MockKey, MockServerEventMap, MockType, SocketType } from './croe/type'
 import { EventEmitter } from 'node:events'
 import { createServer } from 'node:net'
 import log from 'electron-log/main'
 import { fromEvent, merge } from 'rxjs'
-import { createMockClient, createMockServer } from './croe'
+import { loadMockModule } from './croe'
 import { normalizeMockKey } from './croe/util'
 import { SocketStore } from './store'
 
@@ -28,7 +28,7 @@ type ServerMessageType =
   | ServerMessage<'connect'>
   | ServerMessage<'disconnect'>
   | ServerMessage<'message'>
-  | ServerMessage<'send'>
+  | ServerMessage<'broadcast'>
 type ClientMessageType =
   | ClientMessage<'connect'>
   | ClientMessage<'disconnect'>
@@ -55,6 +55,7 @@ type SocketManagerEventMap = AddPrefix<SocketManagerClientEventMap, 'client'> & 
 
 export interface SocketItem {
   key: MockKey
+  mockType: MockType
   socketType: SocketType
   running: boolean
   logs: string[]
@@ -68,7 +69,7 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
 
   /** 检查端口或管道是否被占用 */
   checkServer(options: Required<Pick<ListenOptions, 'port'>> | Required<Pick<ListenOptions, 'path'>>) {
-    return new Promise<Error | void>((resolve) => {
+    return new Promise<string | void>((resolve) => {
       const server = createServer()
       server.listen(options, () => {
         server.close()
@@ -76,24 +77,24 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       })
       server.on('error', (err) => {
         server.close()
-        resolve(err)
+        resolve(err.message)
       })
     })
   }
 
-  createServer(name: MockKey<'server'>) {
-    const server = createMockServer(name)
+  async createServer(name: MockKey<'server'>) {
+    const server = await loadMockModule(name)
     this.serverMap.set(name, server)
     this.store.addServer(name)
-    const eventNames: (keyof MockServerEventMap)[] = [
+    const eventNames = [
       'close',
       'error',
       'listening',
       'connect',
       'disconnect',
       'message',
-      'send',
-    ]
+      'broadcast',
+    ] as const satisfies (keyof MockServerEventMap)[]
     const sub = merge(...eventNames.map(eventName => fromEvent<ServerMessageType>(server, eventName, (...args) => ({
       name,
       type: `server:${eventName}`,
@@ -112,9 +113,9 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
     })
   }
 
-  createClient(name: MockKey<'client'>) {
+  async createClient(name: MockKey<'client'>) {
     this.logger.debug('createClient', name)
-    const client = createMockClient(name)
+    const client = await loadMockModule(name)
     this.clientMap.set(name, client)
     this.store.addClient(name)
     const eventNames: (keyof MockClientEventMap)[] = [
@@ -187,14 +188,8 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
   }
 
   /** client -> server */
-  send2server(name: MockKey<'client'>, data: any) {
-    this.clientMap.get(name)?.send(data)
-  }
-
-  /** server -> client */
-  send2client(name: MockKey<'server'>, id: string, message: string) {
-    this.serverMap.get(name)?.send(id, message)
-    this.serverMap.get(name)?.broadcast(message)
+  send2server(name: MockKey<'client'>, message: string) {
+    this.clientMap.get(name)?.send(message)
   }
 
   /** server -> all client */

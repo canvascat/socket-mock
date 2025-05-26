@@ -1,3 +1,6 @@
+import type * as socket from './socket'
+import type * as websocket from './websocket'
+
 export interface MockServerEventMap {
   /** 服务器关闭 */
   close: [address: string]
@@ -9,9 +12,10 @@ export interface MockServerEventMap {
   connect: [id: string]
   /** 客户端断开连接 */
   disconnect: [id: string]
-  /** 客户端发送消息 */
+  /** 收到客户端发送消息 */
   message: [id: string, message: string]
-  send: [id: string, message: string]
+  /** 广播消息到所有客户端 */
+  broadcast: [message: string]
 }
 
 export interface MockClientEventMap {
@@ -21,12 +25,13 @@ export interface MockClientEventMap {
   disconnect: []
   /** 客户端连接失败 */
   error: [Error]
-  /** 客户端发送消息 */
+  /** 收到服务端发送消息 */
   message: [message: string]
+  /** 发送消息到服务器 */
   send: [message: string]
 }
 
-export type SocketType = 'socket' | 'websocket'
+export type SocketType = typeof socket.socketType | typeof websocket.socketType
 
 export type MockType = 'server' | 'client'
 

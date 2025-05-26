@@ -4,7 +4,7 @@ import { any2string } from './util'
 
 class WebSocketMockServer extends MockServer {
   private server: WebSocketServer
-  private clients = new Map<string, WebSocket>()
+  private id = 0
 
   constructor(port: number) {
     super()
@@ -25,36 +25,30 @@ class WebSocketMockServer extends MockServer {
   }
 
   private onConnection(client: WebSocket) {
-    this.clients.set(client.url, client)
-    this.emit('connect', client.url)
-
+    const id = `${this.id++}`
+    this.logger.debug(`客户端${id}已连接`, client.url)
+    this.emit('connect', id)
     client.on('message', (message) => {
-      this.emit('message', client.url, message.toString('utf-8'))
+      this.emit('message', id, message.toString('utf-8'))
     }).once('close', () => {
-      console.debug('Mock server is disconnected')
-      this.clients.delete(client.url)
-      this.emit('disconnect', client.url)
+      this.logger.debug('客户端断开连接')
+      this.emit('disconnect', id)
+    }).once('error', (err) => {
+      this.logger.error('连接错误:', err)
+      client.close()
     })
   }
 
   close() {
-    this.logger.debug('invoke close')
     this.server.close()
-    this.clients.forEach(ws => ws.close())
-  }
-
-  send(id: string, message: string) {
-    this.clients.get(id)?.send(message)
-    this.emit('send', id, message)
+    this.server.clients.forEach(client => client.close())
+    this.server.clients.clear()
   }
 
   broadcast(message: string) {
-    this.clients.forEach(ws => ws.send(message))
+    this.emit('broadcast', message)
+    this.server.clients.forEach(client => client.send(message))
   }
-}
-
-export function createMockServer(port: number | string) {
-  return new WebSocketMockServer(+(port))
 }
 
 class WebSocketMockClient extends MockClient {
@@ -85,6 +79,12 @@ class WebSocketMockClient extends MockClient {
   }
 }
 
+export const socketType = 'websocket' as const
+
 export function createMockClient(url: string) {
   return new WebSocketMockClient(url)
+}
+
+export function createMockServer(port: number | string) {
+  return new WebSocketMockServer(+(port))
 }

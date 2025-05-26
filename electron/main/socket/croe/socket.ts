@@ -25,21 +25,19 @@ class SocketMockClient extends MockClient {
   }
 
   send(message: string) {
+    this.emit('send', message)
     this.client.write(message)
   }
 }
 
-export function createMockClient(path: string) {
-  return new SocketMockClient(path)
-}
-
 class SocketMockServer extends MockServer {
   private server: net.Server
-  private clients = new Map<string, net.Socket>()
+  private clients = new Set<net.Socket>()
+  private id = 0
 
   constructor(path: string) {
     super()
-    this.server = net.createServer(this.onConnection)
+    this.server = net.createServer(client => this.onConnection(client))
     this.server.listen({
       path,
       exclusive: false,
@@ -55,48 +53,42 @@ class SocketMockServer extends MockServer {
     })
   }
 
-  private onConnection(socket: net.Socket) {
-    console.debug('server 客户端已连接', socket.address())
-
-    const id = socket.remotePort?.toString() ?? ''
-    this.clients.set(id, socket)
+  private onConnection(client: net.Socket) {
+    const id = `${this.id++}`
+    this.logger.debug(`客户端${id}已连接`)
+    this.clients.add(client)
     this.emit('connect', id)
 
-    socket.on('data', (data) => {
+    client.on('data', (data) => {
       this.emit('message', id, data.toString())
-    })
-    socket.once('close', () => {
-      console.debug('客户端断开连接')
-      this.clients.delete(id)
+    }).once('close', () => {
+      this.logger.debug('客户端断开连接')
+      this.clients.delete(client)
       this.emit('disconnect', id)
-    })
-    socket.once('error', (err) => {
-      console.error('连接错误:', err)
-      socket.destroy()
+    }).once('error', (err) => {
+      this.logger.error('连接错误:', err)
+      client.destroy()
     })
   }
 
   close() {
     this.server.close()
-  }
-
-  send(id: string, message: string) {
-    this.clients.get(id)?.write(message)
+    this.clients.forEach(client => client.destroy())
+    this.clients.clear()
   }
 
   broadcast(message: string) {
-    this.clients.forEach(socket => socket.write(message))
+    this.emit('broadcast', message)
+    this.clients.forEach(client => client.write(message))
   }
+}
+
+export const socketType = 'socket' as const
+
+export function createMockClient(path: string) {
+  return new SocketMockClient(path)
 }
 
 export function createMockServer(path: string) {
   return new SocketMockServer(path)
 }
-// const closeServer = setup()
-
-// // 进程退出前，关闭服务器后再退出
-// process.on('beforeExit', async () => {
-//   console.debug('进程退出前，关闭服务器')
-//   await closeServer()
-//   process.exit(0)
-// })

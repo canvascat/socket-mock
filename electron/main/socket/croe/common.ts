@@ -1,19 +1,11 @@
 import type { MockClientEventMap, MockServerEventMap } from './type'
 import EventEmitter from 'node:events'
 import log from 'electron-log/main'
-import process from 'node:process'
-
-// windows 命名管道
-// export const PIPE_NAME =  '//./pipe/agent_cli';
-
-export const PIPE_NAME = process.platform === 'win32' ? '\\\\.\\pipe\\agent_cli' : '\0agent_cli'
 
 export abstract class MockServer extends EventEmitter<MockServerEventMap> {
   protected logger = log.scope(this.constructor.name)
   /** 关闭服务器 */
   abstract close(): void
-  /** 发送消息 */
-  abstract send(id: string, message: string): void
   /** 广播消息 */
   abstract broadcast(message: string): void;
 
@@ -34,4 +26,16 @@ export abstract class MockClient extends EventEmitter<MockClientEventMap> {
     this.logger.debug('dispose')
     this.close()
   }
+}
+
+export interface SocketMockModule {
+  /**
+   * socket类型
+   * @example 'socket' | 'websocket' | 'socket-io' | 'ipc' | 'abstract-socket'
+   */
+  socketType: string
+  /** 创建客户端 */
+  createMockClient: (path: string) => MockClient
+  /** 创建服务器 */
+  createMockServer: (path: string) => MockServer
 }

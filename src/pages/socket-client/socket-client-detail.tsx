@@ -46,6 +46,8 @@ export function SocketClientDetail() {
     }
   }
 
+  const logText = logs.join('\n')
+
   return (
     <div className="p-6 pt-0 flex flex-col h-0 gap-4 flex-1 overflow-hidden">
       <Card className="flex-1 overflow-auto p-4 gap-2" ref={logRef}>
@@ -54,7 +56,7 @@ export function SocketClientDetail() {
           {key}
         </div>
         <div className="text-xs whitespace-pre-line break-all flex-1 overflow-auto">
-          {logs.length === 0 ? <div className="text-muted-foreground">暂无日志</div> : logs.map((l, i) => <pre key={`${i}:${l}`}>{l}</pre>)}
+          {!logText ? <div className="text-muted-foreground">暂无日志</div> : <pre>{logText}</pre>}
         </div>
       </Card>
       <Card className="p-4 gap-2 flex flex-col">
