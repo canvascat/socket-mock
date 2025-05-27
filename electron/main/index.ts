@@ -68,7 +68,7 @@ async function createWindow() {
     log.debug('loadURL', VITE_DEV_SERVER_URL)
     win.loadURL(VITE_DEV_SERVER_URL)
     // Open devTool if the app is not packaged
-    // win.webContents.openDevTools({ mode: 'detach' })
+    win.webContents.openDevTools({ mode: 'detach' })
   }
   else {
     win.loadFile(indexHtml)
