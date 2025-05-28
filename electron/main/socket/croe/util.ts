@@ -1,4 +1,3 @@
-import type { IncomingMessage } from 'node:http'
 import type { MockKey, MockType, SocketType } from './type'
 
 export function normalizeMockKey<T extends MockType>(mockKey: MockKey<T>) {
@@ -14,8 +13,4 @@ export function any2string(value: any) {
     return JSON.stringify(value, null, 2)
   }
   return value.toString()
-}
-
-export function incomingMessage2string(message: IncomingMessage): string {
-  return message.headers['content-length'] ? message.read().toString('utf-8') : ''
 }

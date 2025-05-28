@@ -4,14 +4,15 @@ import path from 'node:path'
 import process from 'node:process'
 import { fileURLToPath } from 'node:url'
 import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
+import Store from 'electron-log'
 import log from 'electron-log/main'
-import { setupSocketManager } from './socket'
+import { setupSocketIPCManager } from './socket'
 import { update } from './update'
 
+// Optional, initialize the store for any renderer process
+Store.initialize()
 // Optional, initialize the logger for any renderer process
 log.initialize()
-
-log.info('Log from the main process')
 
 // const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
@@ -91,7 +92,7 @@ async function createWindow() {
 }
 
 app.whenReady().then(() => {
-  setupSocketManager()
+  setupSocketIPCManager()
   createWindow()
 })
 

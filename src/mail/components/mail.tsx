@@ -1,20 +1,11 @@
 'use client'
 
-import type { Mail } from '../data'
+import type { IMail } from '../data'
 import {
-  AlertCircle,
-  Archive,
-  ArchiveX,
   File,
   Inbox,
-  MessagesSquare,
   Search,
-  Send,
-  ShoppingCart,
-  Trash2,
-  Users2,
 } from 'lucide-react'
-
 import * as React from 'react'
 import { Input } from '@/components/ui/input'
 import {
@@ -32,25 +23,22 @@ import {
 import { TooltipProvider } from '@/components/ui/tooltip'
 import { cn } from '@/lib/utils'
 import { useMailStore } from '../use-mail'
-import { AccountSwitcher } from './account-switcher'
 import { MailDisplay } from './mail-display'
 import { MailList } from './mail-list'
 import { Nav } from './nav'
+import { ProjectSwitcher, type IProject } from './project-switcher'
 
 interface MailProps {
-  accounts: {
-    label: string
-    email: string
-    icon: React.ReactNode
-  }[]
-  mails: Mail[]
+  projects: IProject[]
+  mails: IMail[]
   defaultLayout?: number[]
   defaultCollapsed?: boolean
   navCollapsedSize: number
 }
 const DEFAULT_LAYOUT = [20, 32, 48]
+
 export function MailComponent({
-  accounts,
+  projects,
   mails,
   defaultLayout = DEFAULT_LAYOUT,
   defaultCollapsed = false,
@@ -99,7 +87,7 @@ export function MailComponent({
               isCollapsed ? 'h-[52px]' : 'px-2',
             )}
           >
-            <AccountSwitcher isCollapsed={isCollapsed} accounts={accounts} />
+            <ProjectSwitcher isCollapsed={isCollapsed} projects={projects} />
           </div>
           <Separator />
           <Nav
@@ -107,40 +95,10 @@ export function MailComponent({
             links={[
               {
                 title: 'Inbox',
-                label: '128',
                 icon: Inbox,
                 variant: 'default',
               },
-              {
-                title: 'Drafts',
-                label: '9',
-                icon: File,
-                variant: 'ghost',
-              },
-              {
-                title: 'Sent',
-                label: '',
-                icon: Send,
-                variant: 'ghost',
-              },
-              {
-                title: 'Junk',
-                label: '23',
-                icon: ArchiveX,
-                variant: 'ghost',
-              },
-              {
-                title: 'Trash',
-                label: '',
-                icon: Trash2,
-                variant: 'ghost',
-              },
-              {
-                title: 'Archive',
-                label: '',
-                icon: Archive,
-                variant: 'ghost',
-              },
+
             ]}
           />
           <Separator />
@@ -148,41 +106,18 @@ export function MailComponent({
             isCollapsed={isCollapsed}
             links={[
               {
-                title: 'Social',
+                title: 'File',
                 label: '972',
-                icon: Users2,
+                icon: File,
                 variant: 'ghost',
               },
-              {
-                title: 'Updates',
-                label: '342',
-                icon: AlertCircle,
-                variant: 'ghost',
-              },
-              {
-                title: 'Forums',
-                label: '128',
-                icon: MessagesSquare,
-                variant: 'ghost',
-              },
-              {
-                title: 'Shopping',
-                label: '8',
-                icon: ShoppingCart,
-                variant: 'ghost',
-              },
-              {
-                title: 'Promotions',
-                label: '21',
-                icon: Archive,
-                variant: 'ghost',
-              },
+
             ]}
           />
         </ResizablePanel>
         <ResizableHandle withHandle />
         <ResizablePanel defaultSize={defaultLayout[1]} minSize={30}>
-          <Tabs defaultValue="all">
+          <Tabs defaultValue="all" className="h-full">
             <div className="flex items-center px-4 py-2">
               <h1 className="text-xl font-bold">Inbox</h1>
               <TabsList className="ml-auto">
@@ -209,10 +144,10 @@ export function MailComponent({
                 </div>
               </form>
             </div>
-            <TabsContent value="all" className="m-0">
+            <TabsContent value="all" className="m-0 overflow-hidden">
               <MailList items={mails} />
             </TabsContent>
-            <TabsContent value="unread" className="m-0">
+            <TabsContent value="unread" className="m-0 overflow-hidden">
               <MailList items={mails.filter(item => !item.read)} />
             </TabsContent>
           </Tabs>

@@ -1,3 +1,5 @@
+import type { IProject } from "./components/project-switcher"
+
 export const mails = [
   {
     id: "6c84fb90-12c4-11e1-840d-7b25c5ee775a",
@@ -171,12 +173,12 @@ export const mails = [
   },
 ]
 
-export type Mail = (typeof mails)[number]
+export type IMail = (typeof mails)[number]
 
-export const accounts = [
+export const accounts: IProject[] = [
   {
-    label: "Alicia Koch",
-    email: "alicia@example.com",
+    label: "默认项目",
+    value: "alicia1@example.com",
     icon: (
       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <title>Vercel</title>
@@ -186,7 +188,7 @@ export const accounts = [
   },
   {
     label: "Alicia Koch",
-    email: "alicia@example.com",
+    value: "alicia2@example.com",
     icon: (
       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <title>Gmail</title>
@@ -199,7 +201,7 @@ export const accounts = [
   },
   {
     label: "Alicia Koch",
-    email: "alicia@example.com",
+    value: "alicia3@example.com",
     icon: (
       <svg role="img" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
         <title>iCloud</title>

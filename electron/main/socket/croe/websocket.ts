@@ -1,6 +1,5 @@
 import WebSocket, { WebSocketServer } from 'ws'
 import { MockClient, MockServer } from './common'
-import { any2string } from './util'
 
 class WebSocketMockServer extends MockServer {
   private server: WebSocketServer
@@ -14,10 +13,10 @@ class WebSocketMockServer extends MockServer {
       this.onConnection(client)
     }).once('listening', () => {
       this.logger.debug('on listening', this.server.address())
-      this.emit('listening', any2string(this.server.address()))
+      this.emit('listening')
     }).once('close', () => {
       this.logger.debug('on close')
-      this.emit('close', any2string(this.server.address()))
+      this.emit('close')
     }).once('error', (error) => {
       this.logger.debug('on error', error)
       this.emit('error', error)
@@ -80,6 +79,7 @@ class WebSocketMockClient extends MockClient {
 }
 
 export const socketType = 'websocket' as const
+export const socketTypeName = 'WebSocket' as const
 
 export function createMockClient(url: string) {
   return new WebSocketMockClient(url)

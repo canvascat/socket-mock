@@ -1,6 +1,19 @@
-import process from 'node:process'
+import type { MockClientEventMap, MockServerEventMap } from './type'
 
-// windows 命名管道
-// export const PIPE_NAME =  '//./pipe/agent_cli';
+export const SOCKET_SERVER_EVENT_NAMES = [
+  'close',
+  'error',
+  'listening',
+  'connect',
+  'disconnect',
+  'message',
+  'broadcast',
+] as const satisfies (keyof MockServerEventMap)[]
 
-export const PIPE_NAME = process.platform === 'win32' ? '\\\\.\\pipe\\agent_cli' : '\0agent_cli'
+export const SOCKET_CLIENT_EVENT_NAMES = [
+  'connect',
+  'disconnect',
+  'error',
+  'message',
+  'send',
+] as const satisfies (keyof MockClientEventMap)[]

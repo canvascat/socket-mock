@@ -1,4 +1,4 @@
-import type { MockClientEventMap, MockServerEventMap } from './type'
+import type { MockClientEventMap, MockServerEventMap, SocketType } from './type'
 import EventEmitter from 'node:events'
 import log from 'electron-log/main'
 
@@ -29,11 +29,10 @@ export abstract class MockClient extends EventEmitter<MockClientEventMap> {
 }
 
 export interface SocketMockModule {
-  /**
-   * socket类型
-   * @example 'socket' | 'websocket' | 'socket-io' | 'ipc' | 'abstract-socket'
-   */
-  socketType: string
+  /** socket类型 */
+  socketType: SocketType
+  /** socket类型名称 */
+  socketTypeName: string
   /** 创建客户端 */
   createMockClient: (path: string) => MockClient
   /** 创建服务器 */

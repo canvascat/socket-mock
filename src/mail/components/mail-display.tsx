@@ -1,4 +1,4 @@
-import type { Mail } from '../data'
+import type { IMail } from '../data'
 import { addDays } from 'date-fns/addDays'
 import { addHours } from 'date-fns/addHours'
 import { format } from 'date-fns/format'
@@ -43,7 +43,7 @@ import {
 } from '@/components/ui/tooltip'
 
 interface MailDisplayProps {
-  mail: Mail | null
+  mail: IMail | null
 }
 
 export function MailDisplay({ mail }: MailDisplayProps) {

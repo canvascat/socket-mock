@@ -1,7 +1,7 @@
 'use client'
 
 import type { LucideIcon } from 'lucide-react'
-import { Link } from 'react-router'
+import { NavLink } from 'react-router'
 
 import { buttonVariants } from '@/components/ui/button'
 import {
@@ -15,6 +15,7 @@ interface NavProps {
   isCollapsed: boolean
   links: {
     title: string
+    /** suffix */
     label?: string
     icon: LucideIcon
     variant: 'default' | 'ghost'
@@ -33,7 +34,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
             ? (
                 <Tooltip key={index} delayDuration={0}>
                   <TooltipTrigger asChild>
-                    <Link
+                    <NavLink
                       to="/"
                       className={cn(
                         buttonVariants({ variant: link.variant, size: 'icon' }),
@@ -44,7 +45,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                     >
                       <link.icon className="h-4 w-4" />
                       <span className="sr-only">{link.title}</span>
-                    </Link>
+                    </NavLink>
                   </TooltipTrigger>
                   <TooltipContent side="right" className="flex items-center gap-4">
                     {link.title}
@@ -57,7 +58,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                 </Tooltip>
               )
             : (
-                <Link
+                <NavLink
                   key={index}
                   to="/"
                   className={cn(
@@ -80,7 +81,7 @@ export function Nav({ links, isCollapsed }: NavProps) {
                       {link.label}
                     </span>
                   )}
-                </Link>
+                </NavLink>
               ),
         )}
       </nav>

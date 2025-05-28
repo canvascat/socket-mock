@@ -1,52 +1,20 @@
 import net from 'node:net'
+import { uniqueId } from 'lodash-es'
 import { MockClient, MockServer } from './common'
-import { any2string } from './util'
 
-class SocketMockClient extends MockClient {
-  private client: net.Socket
-
-  constructor(path: string) {
-    super()
-    this.client = net.createConnection({ path })
-    this.client.once('connect', () => {
-      this.emit('connect')
-    }).on('data', (data) => {
-      this.emit('message', data.toString())
-    }).once('close', () => {
-      this.emit('disconnect')
-    }).once('error', (err) => {
-      this.emit('error', err)
-      this.client.destroy()
-    })
-  }
-
-  close() {
-    this.client.destroy()
-  }
-
-  send(message: string) {
-    this.emit('send', message)
-    this.client.write(message)
-  }
-}
-
-class SocketMockServer extends MockServer {
+class TCPSocketMockServer extends MockServer {
   private server: net.Server
   private clients = new Set<net.Socket>()
-  private id = 0
 
-  constructor(path: string) {
+  constructor(port: number) {
     super()
     this.server = net.createServer(client => this.onConnection(client))
-    this.server.listen({
-      path,
-      exclusive: false,
-    }, () => {
+    this.server.listen(port, () => {
       this.logger.debug('on listening', this.server.address())
-      this.emit('listening', any2string(this.server.address()))
+      this.emit('listening')
     }).once('close', () => {
       this.logger.debug('on close')
-      this.emit('close', any2string(this.server.address()))
+      this.emit('close')
     }).once('error', (error) => {
       this.logger.debug('on error', error)
       this.emit('error', error)
@@ -54,7 +22,7 @@ class SocketMockServer extends MockServer {
   }
 
   private onConnection(client: net.Socket) {
-    const id = `${this.id++}`
+    const id = uniqueId()
     this.logger.debug(`客户端${id}已连接`)
     this.clients.add(client)
     this.emit('connect', id)
@@ -83,12 +51,41 @@ class SocketMockServer extends MockServer {
   }
 }
 
-export const socketType = 'socket' as const
+class TCPSocketMockClient extends MockClient {
+  private client: net.Socket
 
-export function createMockClient(path: string) {
-  return new SocketMockClient(path)
+  constructor(port: number) {
+    super()
+    this.client = net.createConnection({ port })
+    this.client.once('connect', () => {
+      this.emit('connect')
+    }).on('data', (data) => {
+      this.emit('message', data.toString())
+    }).once('close', () => {
+      this.emit('disconnect')
+    }).once('error', (err) => {
+      this.emit('error', err)
+      this.client.destroy()
+    })
+  }
+
+  close() {
+    this.client.destroy()
+  }
+
+  send(message: string) {
+    this.emit('send', message)
+    this.client.write(message)
+  }
 }
 
-export function createMockServer(path: string) {
-  return new SocketMockServer(path)
+export const socketType = 'tcp' as const
+export const socketTypeName = 'TCP' as const
+
+export function createMockClient(port: number | string) {
+  return new TCPSocketMockClient(+(port))
+}
+
+export function createMockServer(port: number | string) {
+  return new TCPSocketMockServer(+(port))
 }

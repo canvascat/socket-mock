@@ -1,13 +1,16 @@
-import type * as socket from './socket'
-import type * as websocket from './websocket'
+import type * as pipe from './pipe-socket'
+import type * as tcp from './tcp-socket'
+import type * as unix from './unix-socket'
+import type * as ws from './websocket'
 
 export interface MockServerEventMap {
   /** 服务器关闭 */
-  close: [address: string]
+  close: []
   /** 服务器错误 */
   error: [Error]
   /** 服务器监听 */
-  listening: [address: string]
+  listening: []
+
   /** 客户端连接 */
   connect: [id: string]
   /** 客户端断开连接 */
@@ -31,7 +34,7 @@ export interface MockClientEventMap {
   send: [message: string]
 }
 
-export type SocketType = typeof socket.socketType | typeof websocket.socketType
+export type SocketType = typeof tcp.socketType | typeof unix.socketType | typeof pipe.socketType | typeof ws.socketType
 
 export type MockType = 'server' | 'client'
 

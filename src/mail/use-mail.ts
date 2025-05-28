@@ -1,11 +1,11 @@
-import type { Mail } from '@/mail/data'
+import type { IMail } from '@/mail/data'
 
 import { create } from 'zustand'
 import { mails } from '@/mail/data'
 
 interface Config {
-  selected: Mail['id'] | null
-  setSelected: (id: Mail['id']) => void
+  selected: IMail['id'] | null
+  setSelected: (id: IMail['id']) => void
 }
 
 export const useMailStore = create<Config>(set => ({

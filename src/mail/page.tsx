@@ -5,7 +5,7 @@ export default function MailPage() {
   return (
     <div className="h-[100vh]">
       <MailComponent
-        accounts={accounts}
+        projects={accounts}
         mails={mails}
         // defaultLayout={defaultLayout}
         // defaultCollapsed={defaultCollapsed}
