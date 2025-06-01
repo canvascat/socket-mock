@@ -78,7 +78,7 @@ class WebSocketMockClient extends MockClient {
   }
 }
 
-export const socketType = 'websocket' as const
+export const socketType = 'ws' as const
 export const socketTypeName = 'WebSocket' as const
 
 export function createMockClient(url: string) {
@@ -88,3 +88,5 @@ export function createMockClient(url: string) {
 export function createMockServer(port: number | string) {
   return new WebSocketMockServer(+(port))
 }
+
+export const isSupport = true

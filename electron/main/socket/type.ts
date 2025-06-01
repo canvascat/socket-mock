@@ -1,6 +1,7 @@
 import type * as pipe from './core/pipe-socket'
 import type * as tcp from './core/tcp-socket'
 import type * as unix from './core/unix-socket'
+import type * as ws from './core/ws-socket'
 
 export interface MockServerEventMap {
   /** 服务器关闭 */
@@ -33,7 +34,7 @@ export interface MockClientEventMap {
   send: [message: string]
 }
 
-export type SocketType = typeof tcp.socketType | typeof unix.socketType | typeof pipe.socketType
+export type SocketType = typeof tcp.socketType | typeof unix.socketType | typeof pipe.socketType | typeof ws.socketType
 
 export type MockType = 'server' | 'client'
 

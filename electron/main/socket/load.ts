@@ -3,6 +3,7 @@ import type { MockKey, MockType, SocketType } from './type'
 import * as pipe from './core/pipe-socket'
 import * as tcp from './core/tcp-socket'
 import * as unix from './core/unix-socket'
+import * as ws from './core/ws-socket'
 import { normalizeMockKey } from './util'
 
 export const supportModules = new Map<SocketType, SocketMockModule>(
@@ -10,6 +11,7 @@ export const supportModules = new Map<SocketType, SocketMockModule>(
     [pipe.socketType, pipe] as const,
     [tcp.socketType, tcp] as const,
     [unix.socketType, unix] as const,
+    [ws.socketType, ws] as const,
   ].filter(([_, module]) => module.isSupport),
 )
 

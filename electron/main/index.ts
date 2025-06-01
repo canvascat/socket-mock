@@ -6,7 +6,7 @@ import { fileURLToPath } from 'node:url'
 import { app, BrowserWindow, ipcMain, screen, shell } from 'electron'
 import Store from 'electron-log'
 import log from 'electron-log/main'
-import { setupSocketIPCManager } from './socket'
+import { setupSocketIPCManager } from './socket/ipc-manager'
 import { update } from './update'
 
 // Optional, initialize the store for any renderer process
