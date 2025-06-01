@@ -1,4 +1,5 @@
 import net from 'node:net'
+import process from 'node:process'
 import { MockClient, MockServer } from './common'
 
 /**
@@ -15,7 +16,7 @@ class UnixSocketMockClient extends MockClient {
     this.client.once('connect', () => {
       this.emit('connect')
     }).on('data', (data) => {
-      this.emit('message', data.toString())
+      this.resolver.output(data, content => this.emit('message', content))
     }).once('close', () => {
       this.emit('disconnect')
     }).once('error', (err) => {
@@ -30,6 +31,7 @@ class UnixSocketMockClient extends MockClient {
 
   send(message: string) {
     this.emit('send', message)
+    message = this.resolver.input(message)
     this.client.write(message)
   }
 }
@@ -61,7 +63,7 @@ class UnixSocketMockServer extends MockServer {
     this.emit('connect', id)
 
     client.on('data', (data) => {
-      this.emit('message', id, data.toString())
+      this.resolver.output(data, content => this.emit('message', id, content))
     }).once('close', () => {
       this.logger.debug('客户端断开连接')
       this.clients.delete(client)
@@ -80,11 +82,12 @@ class UnixSocketMockServer extends MockServer {
 
   broadcast(message: string) {
     this.emit('broadcast', message)
+    message = this.resolver.input(message)
     this.clients.forEach(client => client.write(message))
   }
 }
 
-export const socketType = 'UnixDomainSocket' as const
+export const socketType = 'unix' as const
 export const socketTypeName = 'unix域套接字' as const
 
 export function createMockClient(path: string) {
@@ -94,3 +97,5 @@ export function createMockClient(path: string) {
 export function createMockServer(path: string) {
   return new UnixSocketMockServer(path)
 }
+
+export const isSupport = process.platform === 'linux' || process.platform === 'darwin'

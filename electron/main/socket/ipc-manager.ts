@@ -1,5 +1,5 @@
 import type { IpcMainInvokeEvent } from 'electron'
-import type { IPCSendMesssageType } from './socket-manager'
+import type { IPCSendMesssageType } from './index'
 import { BrowserWindow, ipcMain } from 'electron'
 import log from 'electron-log/main'
 import { SocketManager } from './socket-manager'
@@ -10,8 +10,7 @@ function broadcast(message: any) {
   })
 }
 
-export type IPCInvokeMap = Pick<SocketManager, 'getSocketTypeOptions' | 'createClient' | 'createServer'>
-export type { IPCSendMesssageType } from './socket-manager'
+export type IPCInvokeMap = Pick<SocketManager, 'broadcastMessage' | 'getServerMockKeys' | 'getSocketTypeOptions' | 'createClient' | 'createServer' | 'closeClient' | 'closeServer'>
 
 interface IPCInvokeData<T extends keyof IPCInvokeMap = keyof IPCInvokeMap> {
   type: T

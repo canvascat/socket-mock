@@ -1,10 +1,10 @@
 import type { MockClient, MockServer } from './croe/common'
-import type { MockClientEventMap, MockKey, MockServerEventMap } from './croe/type'
+import type { MockClientEventMap, MockKey, MockServerEventMap } from './type'
 import EventEmitter from 'node:events'
 import log from 'electron-log/main'
 import { fromEvent, merge } from 'rxjs'
-import { SOCKET_CLIENT_EVENT_NAMES, SOCKET_SERVER_EVENT_NAMES } from './croe/const'
-import { loadMockModule, supportModules } from './croe/load'
+import { SOCKET_CLIENT_EVENT_NAMES, SOCKET_SERVER_EVENT_NAMES } from './const'
+import { loadMockModule, supportModules } from './load'
 
 interface ServerMessage<T extends keyof MockServerEventMap = keyof MockServerEventMap> {
   name: MockKey
@@ -18,6 +18,7 @@ interface ClientMessage<T extends keyof MockClientEventMap = keyof MockClientEve
   type: `client:${T}`
   args: MockClientEventMap[T]
 }
+
 export type ServerMessageType =
   | ServerMessage<'listening'>
   | ServerMessage<'close'>
@@ -36,7 +37,6 @@ export type ClientMessageType =
 type AddPrefix<T, P extends string> = {
   [K in keyof T as `${P}:${string & K}`]: T[K]
 }
-
 type SocketManagerClientEventMap<T extends keyof MockClientEventMap = keyof MockClientEventMap> = {
   [P in T]: [ClientMessage<P>]
 }
@@ -44,9 +44,9 @@ type SocketManagerServerEventMap<T extends keyof MockServerEventMap = keyof Mock
   [P in T]: [ServerMessage<P>]
 }
 export type IPCSendMesssageType = ServerMessageType | ClientMessageType
-type SocketManagerEventMap = AddPrefix<SocketManagerClientEventMap, 'client'> & AddPrefix<SocketManagerServerEventMap, 'server'> & {
-  message: [IPCSendMesssageType]
-}
+  type SocketManagerEventMap = AddPrefix<SocketManagerClientEventMap, 'client'> & AddPrefix<SocketManagerServerEventMap, 'server'> & {
+    message: [IPCSendMesssageType]
+  }
 
 export class SocketManager extends EventEmitter<SocketManagerEventMap> {
   private readonly logger = log.scope(this.constructor.name)
@@ -63,6 +63,10 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       label: module.socketTypeName,
       value: module.socketType,
     }))
+  }
+
+  getServerMockKeys(): MockKey<'server'>[] {
+    return Array.from(this.servers.keys())
   }
 
   /**
@@ -120,6 +124,18 @@ export class SocketManager extends EventEmitter<SocketManagerEventMap> {
       })
     })
     return { name }
+  }
+
+  /**
+   * 广播消息
+   * @param name 服务器名称
+   * @param message 消息
+   */
+  broadcastMessage(name: MockKey<'server'>, message: string) {
+    const server = this.servers.get(name)
+    if (server) {
+      server.broadcast(message)
+    }
   }
 
   /**

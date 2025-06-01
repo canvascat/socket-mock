@@ -1,9 +1,11 @@
 import net from 'node:net'
+import process from 'node:process'
 import { MockClient, MockServer } from './common'
 
 /**
  * 管道客户端
- * pipe://\\.\pipe\agent_cli
+ * pipe://`\\.\pipe\agent_cli`
+ *  `//./pipe/agent_cli`
  * only support windows
  */
 class PipeSocketMockClient extends MockClient {
@@ -15,7 +17,7 @@ class PipeSocketMockClient extends MockClient {
     this.client.once('connect', () => {
       this.emit('connect')
     }).on('data', (data) => {
-      this.emit('message', data.toString())
+      this.resolver.output(data, content => this.emit('message', content))
     }).once('close', () => {
       this.emit('disconnect')
     }).once('error', (err) => {
@@ -30,6 +32,7 @@ class PipeSocketMockClient extends MockClient {
 
   send(message: string) {
     this.emit('send', message)
+    message = this.resolver.input(message)
     this.client.write(message)
   }
 }
@@ -64,7 +67,7 @@ class PipeSocketMockServer extends MockServer {
     this.emit('connect', id)
 
     client.on('data', (data) => {
-      this.emit('message', id, data.toString())
+      this.resolver.output(data, msg => this.emit('message', id, msg))
     }).once('close', () => {
       this.logger.debug('客户端断开连接')
       this.clients.delete(client)
@@ -83,12 +86,13 @@ class PipeSocketMockServer extends MockServer {
 
   broadcast(message: string) {
     this.emit('broadcast', message)
+    message = this.resolver.input(message)
     this.clients.forEach(client => client.write(message))
   }
 }
 
-export const socketType = 'NamedPipes' as const
-export const socketTypeName = '命名管道（仅支持Windows）' as const
+export const socketType = 'pipe' as const
+export const socketTypeName = '命名管道' as const
 
 export function createMockClient(path: string) {
   return new PipeSocketMockClient(path)
@@ -97,3 +101,5 @@ export function createMockClient(path: string) {
 export function createMockServer(path: string) {
   return new PipeSocketMockServer(path)
 }
+
+export const isSupport = process.platform === 'win32'
