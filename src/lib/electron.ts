@@ -1,7 +1,7 @@
 import type { HandleFnMap, OnFnMap } from '@main/socket'
-import type { MockKey } from '@main/socket/croe/type'
+import type { MockKey } from '@main/socket/core/type'
 import type { IPCSendMesssageType } from '@main/socket/manager'
-import { normalizeMockKey } from '@main/socket/croe/util'
+import { normalizeMockKey } from '@main/socket/core/util'
 import { fromEvent } from 'rxjs'
 import { createRpc } from './rpc'
 

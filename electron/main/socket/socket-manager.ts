@@ -1,4 +1,4 @@
-import type { MockClient, MockServer } from './croe/common'
+import type { MockClient, MockServer } from './core/common'
 import type { MockClientEventMap, MockKey, MockServerEventMap } from './type'
 import EventEmitter from 'node:events'
 import log from 'electron-log/main'

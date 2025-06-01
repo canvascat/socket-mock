@@ -1,6 +1,6 @@
-import type * as pipe from './croe/pipe-socket'
-import type * as tcp from './croe/tcp-socket'
-import type * as unix from './croe/unix-socket'
+import type * as pipe from './core/pipe-socket'
+import type * as tcp from './core/tcp-socket'
+import type * as unix from './core/unix-socket'
 
 export interface MockServerEventMap {
   /** 服务器关闭 */

@@ -1,8 +1,8 @@
-import type { MockClient, MockServer, SocketMockModule } from './croe/common'
+import type { MockClient, MockServer, SocketMockModule } from './core/common'
 import type { MockKey, MockType, SocketType } from './type'
-import * as pipe from './croe/pipe-socket'
-import * as tcp from './croe/tcp-socket'
-import * as unix from './croe/unix-socket'
+import * as pipe from './core/pipe-socket'
+import * as tcp from './core/tcp-socket'
+import * as unix from './core/unix-socket'
 import { normalizeMockKey } from './util'
 
 export const supportModules = new Map<SocketType, SocketMockModule>(

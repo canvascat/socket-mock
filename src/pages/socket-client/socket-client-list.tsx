@@ -1,6 +1,6 @@
-import type { MockKey } from '@main/socket/croe/type'
+import type { MockKey } from '@main/socket/core/type'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { normalizeMockKey } from '@main/socket/croe/util'
+import { normalizeMockKey } from '@main/socket/core/util'
 import { useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { Link } from 'react-router'

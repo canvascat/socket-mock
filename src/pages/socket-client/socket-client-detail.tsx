@@ -1,4 +1,4 @@
-import type { MockKey } from '@main/socket/croe/type'
+import type { MockKey } from '@main/socket/core/type'
 import { useEffect, useRef, useState } from 'react'
 import { useParams } from 'react-router'
 import { Button } from '@/components/ui/button'

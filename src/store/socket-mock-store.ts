@@ -1,6 +1,6 @@
-import type { MockKey } from '@main/socket/croe/type'
+import type { MockKey } from '@main/socket/core/type'
 import type { SocketMockItem } from '@/types'
-import { normalizeMockKey } from '@main/socket/croe/util'
+import { normalizeMockKey } from '@main/socket/core/util'
 import { create } from 'zustand'
 import { createJSONStorage, persist } from 'zustand/middleware'
 import { persistStorage } from './persist-storage'

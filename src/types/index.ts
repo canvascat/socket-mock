@@ -1,5 +1,5 @@
 import type { ClientMessageType, IPCSendMesssageType, ServerMessageType } from '@main/socket'
-import type { MockKey, MockType, SocketType } from '@main/socket/croe/type'
+import type { MockKey, MockType, SocketType } from '@main/socket/core/type'
 import type { Schema } from 'json-schema-faker'
 
 export interface SocketMockMessageBase {
